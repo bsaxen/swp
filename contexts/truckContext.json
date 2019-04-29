@@ -1,0 +1,16 @@
+{
+  "@id": "http://swp.simuino.com/truck#",
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "speed" :
+    {
+      "@id": "http://swp.simuino.com/truck#hasSpeed",
+      "@type": "xsd:integer"
+    },
+    "engineTemp" :
+    {
+      "@id": "http://swp.simuino.com/truck#hasEngineTemp",
+      "@type": "xsd:integer"
+    }
+  }
+}
