@@ -1,5 +1,9 @@
 <!--
 -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+</script>
+
 <style>
 .slidecontainer {
   width: 100%;
@@ -43,14 +47,31 @@
 <meta charset="ISO-8859-1"/>
 <!--meta charset="UTF-8"/-->
 <title>WebSocket console</title>
+<script type="text/javascript">
+  $(document).ready(function(){
+      $("input[type='button']").click(function(){
+          var radioValue = $("input[name='hb_status']:checked").val();
+          if(radioValue){
+              alert("Your are a - " + radioValue);
+          }
+      });
+      
+  });
+</script>
 <script>
 var socket = null;
 
 var addressBox = null;
 var logBox = null;
 var messageBox = null;
-var codeBox = null;
-var reasonBox = null;
+var speedBox = null;
+var hbBox = null;
+var idBox = null;
+var tempBox = null;
+
+var handbrake = false;
+
+var json = '{"id":"truck-12345","speed":100,"engineTemp":90,"handbreakStatus":true }';
 
 function addToLog(log) {
   logBox.value += log + '\n'
@@ -58,24 +79,47 @@ function addToLog(log) {
   logBox.scrollTop = 1000000;
 }
 
-function send() {
+function send3() {
+  empty = '';
+  if (hbOnBox.value == 1)
+  {
+    handbrake = true;
+  }
+  else
+  {
+    handbrake = false;
+  }
+  json = empty.concat('{"id":"',idBox.value,'","speed":',speedBox.value, ',"engineTemp":,"handbreakStatus":',handbrake,'}');
+  addToLog(json);
   if (!socket) {
-    addToLog('Not connected');
+    addToLog('Not connected ');
     return;
   }
 
-  socket.send(messageBox.value);
-  addToLog('> ' + messageBox.value);
-  //messageBox.value = '';
-  
-  /*data = messageBox.value.map(function (num) {
-    return String.fromCharCode(num);
-  }).join('');
-  addToLog('> ' + data);*/
-  //var data = messageBox.value.charCodeAt(38);
-  //addToLog('> ' + data);
+  socket.send(json);
+  addToLog('> ' + json);
+
+  if (!socket) {
+    addToLog('...Not connected ');
+    return;
+  }
 }
 
+
+function send1() {
+  if (!socket) {
+    addToLog('Not connected ' + speedBox.value);
+    return;
+  }
+
+  socket.send(speedBox.value);
+  addToLog('> ' + speedBox.value);
+
+  if (!socket) {
+    addToLog('... Not connected ' + speedBox.value);
+    return;
+  }
+}
 function connect() {
   if ('WebSocket' in window) {
     socket = new WebSocket(addressBox.value);
@@ -143,13 +187,16 @@ function printState() {
 
 function init() {
   var scheme = window.location.protocol == 'https:' ? 'wss://' : 'ws://';
-  var defaultAddress = scheme + window.location.host + '/wsinput';
+  //var defaultAddress = scheme + window.location.host + '/wsinput';
+  var defaultAddress = 'ws://demos.kaazing.com/echo';
 
   addressBox = document.getElementById('address');
   logBox = document.getElementById('log');
   messageBox = document.getElementById('message');
-  codeBox = document.getElementById('code');
-  reasonBox = document.getElementById('reason');
+  speedBox = document.getElementById('speed');
+  idBox = document.getElementById('truck_id');
+  hbOnBox  = document.getElementById('hb_on');
+  tempBox = document.getElementById('engine_temp');
 
   addressBox.value = defaultAddress;
 
@@ -172,32 +219,41 @@ function sendPhoto() {
 }
 
 </script>
+
+<script type='text/javascript'>
+
+  $(document).ready(function() { 
+    $('input[name=paid]').change(function(){
+         $('form').submit();
+    });
+   });
+ 
+ </script>
+
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <h1>Scania Truck Simulator</h1>
 <img src="truck2.jpg" alt="Scania truck" width="200" >
 
 <body bgcolor=#f7f7f7  onload="init()">
-
-<form action="#" onsubmit="connect(); return false;">
-<input type="text" id="address" size="40">
-<input type="submit" value="connect">
-</form>
+  <p>Speed km/h: <span id="demo"></span></p>
 
 
-<form action="#" onsubmit="send(); return false;">
-
+<form action="#" onsubmit="send3(); return false;">
         <div class="slidecontainer">
-                <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
-                <p>Speed km/h: <span id="demo"></span></p>
+                <input type="range" min="0" max="100" value="0" class="slider" id="speed">
         </div> 
-    <input type="radio" name="hb_status" value="on"> On
-    <input type="radio" name="hb_status" value="off"> Off
-<input type="submit" value="Handbrake">
-
+        Truck Id <input type="text" id="truck_id" name="truck_id"  size="10"> 
+<input type="submit" value="Speed">
 </form>
+
+<form action="#" onsubmit="send3(); return false;">
+<input type="checkbox" id="hb_on" name="hb_on" value="1" onClick="this.form.submit()";>
+</form>
+
 <script>
-        var slider = document.getElementById("myRange");
+        var slider = document.getElementById("speed");
         var output = document.getElementById("demo");
         output.innerHTML = slider.value;
         
@@ -208,11 +264,13 @@ function sendPhoto() {
 
 <textarea id="log" rows="10" cols="80" readonly></textarea>
 <form action="#" onsubmit="closeSocket(); return false;">
-        Code <input type="text" id="code" size="10">
-        Reason <input type="text" id="reason" size="20">
         <input type="submit" value="close">
         </form>
 <br>
-
+<form action="#" onsubmit="connect(); return false;">
+  <input type="text" id="address" size="40">
+  <input type="submit" value="connect">
+  <input type="button" value="print state" onclick="printState();">
+  </form>
 </body>
 </html>
