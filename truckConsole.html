@@ -1,42 +1,42 @@
 <!--
-Copyright 2011, Google Inc.
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-    * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-    * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
+<style>
+.slidecontainer {
+  width: 100%;
+}
 
-<!--
-A simple console for testing WebSocket server.
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
 
-Type an address into the top text input and click connect to establish
-WebSocket. Then, type some message into the bottom text input and click send
-to send the message. Received/sent messages and connection state will be shown
-on the middle textarea.
--->
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+</style>
 
 <html>
 <head>
@@ -172,31 +172,47 @@ function sendPhoto() {
 }
 
 </script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body onload="init()">
+<h1>Scania Truck Simulator</h1>
+<img src="truck2.jpg" alt="Scania truck" width="200" >
+
+<body bgcolor=#f7f7f7  onload="init()">
 
 <form action="#" onsubmit="connect(); return false;">
 <input type="text" id="address" size="40">
 <input type="submit" value="connect">
-<input type="button" value="print state" onclick="printState();">
 </form>
 
-<textarea id="log" rows="10" cols="40" readonly></textarea>
 
 <form action="#" onsubmit="send(); return false;">
-<input type="text" id="message" size="40">
-<input type="submit" value="send">
-</form>
 
+        <div class="slidecontainer">
+                <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+                <p>Speed km/h: <span id="demo"></span></p>
+        </div> 
+    <input type="radio" name="hb_status" value="on"> On
+    <input type="radio" name="hb_status" value="off"> Off
+<input type="submit" value="Handbrake">
+
+</form>
+<script>
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+        output.innerHTML = slider.value;
+        
+        slider.oninput = function() {
+          output.innerHTML = this.value;
+        }
+</script>
+
+<textarea id="log" rows="10" cols="80" readonly></textarea>
 <form action="#" onsubmit="closeSocket(); return false;">
-Code <input type="text" id="code" size="10">
-Reason <input type="text" id="reason" size="20">
-<input type="submit" value="close">
-</form>
+        Code <input type="text" id="code" size="10">
+        Reason <input type="text" id="reason" size="20">
+        <input type="submit" value="close">
+        </form>
 <br>
-<form action="#" onsubmit="sendPhoto(); return false;">
-Binary <input type="text" id="code" size="10">
-<input type="submit" value="binary">
-</form>
+
 </body>
 </html>
